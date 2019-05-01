@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{% block container %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<div class='row'>
+	{% if posts %}
+	<div class='col-md-8'>
+	{% for post in posts %}
+		 <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+            	<div class= 'row'>
+            		<div class='col-md-5'><b>Author:</b> <a href="{{url_for('account', user_id = post.user_id)}}">{{ post.author.username }}</a></div>
+            		<div class='col-md-4'></div>
+            		<div class='col-md-3'>Likes: {{post.popularity}}</div>
+              <!-- <p><b>Author:</b> {{ post.author.username }}
+              <span>
+            	Popularity: {{post.popularity}}
+            </span>
+        </p> -->
+    </div>
+            <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h4><a class="article-title" href="{{url_for('read_post', post_id = post.id)}}">{{ post.title }}</a></h4>
+            <div class="article-content" style="height: 100px;overflow-y: auto;overflow-x: hidden;"><b>Content:</b> {{ post.content | striptags}}</div>
+            <div class = 'row'  style="padding-top: 10px">
+            	<div class='col-md-2'>
+           			<form action="{{url_for('like_post', post_id=post.id)}}" method="POST">
+			    	<input class="btn btn-info" type="submit" value="Like">
+					</form>
+				</div>
+				{% if current_user.id == post.user_id %}
+				<div class='col-md-6'></div>
+				<div class='col-md-2'>
+					<form action="{{url_for('update_post', post_id=post.id)}}">
+				    <input class="btn btn-primary" type="submit" value="Update">
+					</form>
+				</div>
+				<div class='col-md-2'>
+					<form action="{{url_for('delete_post', post_id=post.id)}}" method="POST">
+				    <input class="btn btn-danger" type="submit" value="Delete">
+					</form>
+				</div>
+				{% endif %}
+			</div>
+			<!-- <div>
+            	<p>Popularity: {{post.popularity}}</p>
+            </div> -->
+        	</div>
+        	</article>
+	{% endfor %}
+			</div>
+			<div class = 'col-md-4'>
+				<div class='text-muted row'>Top 5 Popular Articles.
+			      <ul class="list-group">
+			      	{% for article in articles %}
+			        	<li class="list-group-item list-group-item-light"><a href="{{url_for('read_post', post_id = article.id)}}">{{article.title}}</a></li>
+			        {% endfor %}
+			      </ul>
+			  	</div>
+			  	<div class='text-muted row' style="margin-top:40px;">Top 5 Latest Articles.
+			      <ul class="list-group">
+			      	{% for article in art %}
+			        	<li class="list-group-item list-group-item-light"><a href="{{url_for('read_post', post_id = article.id)}}">{{article.title}}</a></li>
+			        {% endfor %}
+			      </ul>
+			  	</div>
+			</div>
+			{% else %}
+			<h3 class="text-center content-section text-danger">No Articles Yet! Please write some articles.<i class="fas fa-frown"></i></li></h3>
+			{% endif %}
+	</div>
+{% endblock %}

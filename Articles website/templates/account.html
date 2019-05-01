@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+{% block container %}
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+<div class='row'>
+    <div class="col-sm-2 col-md-2">
+        <img src="{{image_file}}"
+        alt="" class="img-rounded img-responsive account-img" style="border-radius: 50%" />
+    </div>
+    <div class="col-sm-3 col-md-3 content-section">
+        <blockquote>
+            <p><b><i class="fas fa-user"></i> Name: </b>{{user.username}}</p> <small><cite>- {{user.city}}, {{user.country}}  <i class="fas fa-map-marker-alt"></i></cite></small>
+        </blockquote>
+        <p><b><i class="fas fa-envelope"></i> Email ID: </b>{{user.email}}</p>
+        <p><b><i class="fas fa-birthday-cake"></i> BirthDate: </b>{{user.birthdate.date()}}</p>
+    </div>
+    <div class="col-md-3"></div>
+    <div class="col-md-4">
+    	<div class='text-muted row'>
+    	  <i>Articles by {{user.username}} -</i> 
+    	</div>
+    	<div class="row" style="height: 100px;overflow-y: auto;overflow-x: hidden;">
+	      <ul class="list-group" style="margin-top: 10px">
+	      	{% if articles %}
+		      	{% for article in articles %}
+		        	<li class="list-group-item list-group-item-light"><a href="{{url_for('read_post', post_id = article.id)}}">{{article.title}}</a></li>
+		        {% endfor %}
+	        {% else %}
+	        	<li class="list-group-item list-group-item-light">Sorry! No Articles by {{user.username}} <i class="fas fa-frown"></i></li>
+	        {% endif %}
+	      </ul>
+		</div>
+	</div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+{% if user.id == current_user.id %}
+	<div class="row content-section b" style="margin-top: 50px">
+		<div class='col-md-2'></div>
+		<div class="col-md-4">
+    	<form method="POST" action="{{url_for('update_account', user_id=current_user.id)}}" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Update Account</legend>
+                <div class="form-group">
+                    {{ form.username.label(class="form-control-label") }}
+
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.city.label(class="form-control-label") }}
+                    {% if form.city.errors %}
+                        {{ form.city(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.city.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.city(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.country.label(class="form-control-label") }}
+                    {% if form.country.errors %}
+                        {{ form.country(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.country.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.country(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.picture.label() }}
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
